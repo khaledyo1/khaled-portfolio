@@ -1,0 +1,21 @@
+{
+  "name": "Khaled ALimawi Portfolio",
+  "short_name": "Khaled Portfolio",
+  "description": "Portfolio of Khaled ALimawi, a software development student and front-end developer building responsive websites, AI automations, Android apps, Telegram bots, and full-stack web products.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "assets/images/khaled-avatar.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    },
+    {
+      "src": "assets/images/khaled-avatar.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
