@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod",
-    "check": "node --check api/chat.js && node --check api/health.js && node --check api/cms-save.js && node --check lib/server-utils.js && node --check public/js/init.js && node --check public/js/main.js && node --check public/js/cms.js && node --check public/js/admin.js && node --check public/js/project.js",
+    "check": "node --check api/chat.js && node --check api/health.js && node --check api/cms-save.js && node --check api/diagnostics.js && node --check lib/cms-schema.js && node --check lib/server-utils.js && node --check public/js/init.js && node --check public/js/main.js && node --check public/js/cms.js && node --check public/js/admin.js && node --check public/js/project.js",
     "serve": "npx serve public"
   },
   "engines": {

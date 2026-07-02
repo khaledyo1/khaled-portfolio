@@ -1,42 +1,50 @@
-const MAX_BODY_CHARS = 2_500_000;
+"use strict";
+
+const {
+  clientIp,
+  isRateLimited,
+  parseJsonBody,
+  resolveAllowedOrigin,
+  sendJson
+} = require("../lib/server-utils");
+const { ValidationError, cleanString, normalizeContent } = require("../lib/cms-schema");
+
 const CONTENT_PATH = "public/content/site-content.json";
-
-function sendJson(response, status, payload) {
-  response.statusCode = status;
-  response.setHeader("Content-Type", "application/json; charset=utf-8");
-  response.setHeader("Cache-Control", "no-store");
-  response.end(JSON.stringify(payload));
-}
-
-function readBody(request) {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    request.on("data", chunk => {
-      body += chunk;
-      if (body.length > MAX_BODY_CHARS) {
-        reject(new Error("Request body is too large."));
-        request.destroy();
-      }
-    });
-    request.on("end", () => resolve(body));
-    request.on("error", reject);
-  });
-}
+const LIMITS = Object.freeze({
+  bodyBytes: 2_800_000,
+  uploadCount: 6,
+  uploadBytes: 1_800_000,
+  rateWindowMs: 10 * 60 * 1000,
+  rateMaxRequests: 12
+});
+const ALLOWED_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function requiredEnv(name) {
   const value = process.env[name];
-  if (!value) throw new Error(`Missing ${name} environment variable.`);
+  if (!value) throw new Error(`missing_env:${name}`);
   return value;
 }
 
 function githubHeaders(token) {
   return {
-    "Accept": "application/vnd.github+json",
-    "Authorization": `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
     "X-GitHub-Api-Version": "2022-11-28",
     "User-Agent": "khaled-portfolio-cms"
   };
+}
+
+function safeErrorMessage(error) {
+  const raw = String(error?.message || "");
+  if (raw.startsWith("missing_env:")) return "إعدادات النشر غير مكتملة داخل Vercel Environment Variables.";
+  if (error instanceof ValidationError) return "البيانات غير صالحة. راجع الحقول المطلوبة والروابط.";
+  if (/bad credentials/i.test(raw)) return "GitHub Token غير صحيح أو لا يملك صلاحية الوصول.";
+  if (/not found/i.test(raw)) return "لم يتم العثور على الريبو أو الملف. راجع GITHUB_OWNER و GITHUB_REPO واسم الفرع.";
+  if (/rate limit/i.test(raw)) return "تم تجاوز حد GitHub API مؤقتاً. حاول لاحقاً.";
+  if (/body_too_large/i.test(raw)) return "حجم البيانات كبير جداً. قلل حجم الصور أو عددها.";
+  if (/invalid_json/i.test(raw)) return "صيغة الطلب غير صالحة.";
+  return "فشل الحفظ بسبب خطأ آمن غير متوقع.";
 }
 
 async function githubRequest(url, options = {}) {
@@ -44,120 +52,79 @@ async function githubRequest(url, options = {}) {
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     const message = payload?.message || `GitHub request failed with ${response.status}`;
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    error.githubPayload = payload;
+    throw error;
   }
   return payload;
 }
 
-function cleanString(value, max = 5000) {
-  return String(value ?? "")
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ")
-    .slice(0, max);
-}
-
-function cleanTextObject(value) {
-  const source = value && typeof value === "object" ? value : {};
-  return {
-    en: cleanString(source.en, 5000),
-    ar: cleanString(source.ar, 5000)
-  };
-}
-
-function sanitizePath(value) {
-  const path = cleanString(value, 180).replace(/\\/g, "/");
+function safeRepoPath(value) {
+  const path = cleanString(value, 220).replace(/\\/g, "/");
   if (!path.startsWith("public/assets/uploads/")) return "";
-  if (path.includes("..")) return "";
+  if (path.includes("..") || path.startsWith("/")) return "";
   return path.replace(/[^a-zA-Z0-9_\-./]/g, "");
 }
 
-function sanitizeContent(input) {
-  const source = input && typeof input === "object" ? input : {};
-  const profile = source.profile && typeof source.profile === "object" ? source.profile : {};
-  const contact = source.contact && typeof source.contact === "object" ? source.contact : {};
-
-  const socials = Array.isArray(source.socials) ? source.socials.slice(0, 12).map(item => ({
-    id: cleanString(item?.id, 60).replace(/[^a-zA-Z0-9_-]/g, ""),
-    label: cleanString(item?.label, 80),
-    url: cleanString(item?.url, 500),
-    icon: cleanString(item?.icon, 220),
-    enabled: item?.enabled !== false
-  })).filter(item => item.id && item.url) : [];
-
-  const projects = Array.isArray(source.projects) ? source.projects.slice(0, 24).map(item => ({
-    id: cleanString(item?.id, 90).replace(/[^a-zA-Z0-9_\-\u0600-\u06FF]/g, "-") || `project-${Date.now()}`,
-    featured: item?.featured === true,
-    category: ["web", "dashboard", "ai"].includes(item?.category) ? item.category : "web",
-    theme: cleanString(item?.theme || "project-theme-klik", 80).replace(/[^a-zA-Z0-9_ -]/g, ""),
-    title: cleanTextObject(item?.title),
-    meta: cleanTextObject(item?.meta),
-    description: cleanTextObject(item?.description),
-    problem: cleanTextObject(item?.problem),
-    delivered: cleanTextObject(item?.delivered),
-    image: cleanString(item?.image, 220),
-    tags: Array.isArray(item?.tags) ? item.tags.slice(0, 12).map(tag => cleanString(tag, 50)).filter(Boolean) : [],
-    liveUrl: cleanString(item?.liveUrl, 500),
-    repoUrl: cleanString(item?.repoUrl, 500),
-    enabled: item?.enabled !== false
-  })).filter(item => item.title.en || item.title.ar) : [];
-
-  return {
-    version: 1,
-    updatedAt: new Date().toISOString(),
-    profile: {
-      name: cleanString(profile.name, 120),
-      title: cleanTextObject(profile.title),
-      heroKicker: cleanTextObject(profile.heroKicker),
-      heroHeadline: cleanTextObject(profile.heroHeadline),
-      heroLead: cleanTextObject(profile.heroLead),
-      heroImage: cleanString(profile.heroImage, 220),
-      avatarImage: cleanString(profile.avatarImage, 220),
-      logoImage: cleanString(profile.logoImage, 220),
-      badges: Array.isArray(profile.badges) ? profile.badges.slice(0, 3).map(cleanTextObject) : []
-    },
-    contact: {
-      email: cleanString(contact.email, 180),
-      phone: cleanString(contact.phone, 80),
-      whatsappNumber: cleanString(contact.whatsappNumber, 40).replace(/[^0-9]/g, ""),
-      location: cleanTextObject(contact.location)
-    },
-    socials,
-    projects
-  };
+function decodedBase64Size(base64) {
+  const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+  return Math.floor((base64.length * 3) / 4) - padding;
 }
 
 function sanitizeUploads(uploads) {
   if (!Array.isArray(uploads)) return [];
-  return uploads.slice(0, 8).map(upload => {
-    const path = sanitizePath(upload?.path);
-    const contentBase64 = cleanString(upload?.contentBase64, 2_000_000).replace(/[^a-zA-Z0-9+/=]/g, "");
-    const contentType = cleanString(upload?.contentType, 80);
+
+  return uploads.slice(0, LIMITS.uploadCount).map((upload, index) => {
+    const path = safeRepoPath(upload?.path);
+    const contentType = cleanString(upload?.contentType, 80).toLowerCase();
+    const contentBase64 = cleanString(upload?.contentBase64, 2_500_000).replace(/[^a-zA-Z0-9+/=]/g, "");
+
+    if (!path) throw new Error(`Invalid upload path at index ${index}.`);
+    if (!ALLOWED_UPLOAD_TYPES.has(contentType)) throw new Error(`Invalid upload type at index ${index}.`);
+    if (!contentBase64 || decodedBase64Size(contentBase64) > LIMITS.uploadBytes) {
+      throw new Error(`Upload at index ${index} is too large.`);
+    }
+
     return { path, contentBase64, contentType };
-  }).filter(upload => upload.path && upload.contentBase64 && upload.contentType.startsWith("image/"));
+  });
 }
 
 async function getFileSha({ owner, repo, branch, path, headers }) {
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, "/")}?ref=${encodeURIComponent(branch)}`;
+  const safePath = encodeURIComponent(path).replace(/%2F/g, "/");
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${safePath}?ref=${encodeURIComponent(branch)}`;
   try {
     const payload = await githubRequest(url, { headers });
     return payload.sha || null;
   } catch (error) {
-    if (/not found/i.test(error.message)) return null;
+    if (Number(error.status) === 404 || /not found/i.test(error.message)) return null;
     throw error;
   }
 }
 
 async function putFile({ owner, repo, branch, path, contentBase64, message, headers }) {
   const sha = await getFileSha({ owner, repo, branch, path, headers });
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, "/")}`;
+  const safePath = encodeURIComponent(path).replace(/%2F/g, "/");
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${safePath}`;
   const body = { message, content: contentBase64, branch };
   if (sha) body.sha = sha;
   return githubRequest(url, { method: "PUT", headers, body: JSON.stringify(body) });
 }
 
 module.exports = async function handler(request, response) {
+  const originCheck = resolveAllowedOrigin(request);
+  const origin = originCheck.allowed ? originCheck.origin : "";
+
+  if (request.method === "OPTIONS") return sendJson(response, 204, {}, origin);
+  if (!originCheck.allowed) return sendJson(response, 403, { ok: false, message: "Origin not allowed." }, origin);
   if (request.method !== "POST") {
-    response.setHeader("Allow", "POST");
-    return sendJson(response, 405, { ok: false, message: "Method not allowed." });
+    response.setHeader("Allow", "POST, OPTIONS");
+    return sendJson(response, 405, { ok: false, message: "Method not allowed." }, origin);
+  }
+
+  const ip = clientIp(request);
+  if (isRateLimited(`cms-save:${ip}`, { windowMs: LIMITS.rateWindowMs, max: LIMITS.rateMaxRequests })) {
+    return sendJson(response, 429, { ok: false, message: "طلبات كثيرة جداً. حاول بعد دقائق." }, origin);
   }
 
   try {
@@ -167,14 +134,12 @@ module.exports = async function handler(request, response) {
     const repo = requiredEnv("GITHUB_REPO");
     const branch = process.env.GITHUB_BRANCH || "main";
 
-    const raw = await readBody(request);
-    const parsed = JSON.parse(raw || "{}");
-
-    if (parsed.password !== adminPassword) {
-      return sendJson(response, 401, { ok: false, message: "كلمة مرور الإدارة غير صحيحة." });
+    const parsed = await parseJsonBody(request, LIMITS.bodyBytes);
+    if (cleanString(parsed.password, 240) !== adminPassword) {
+      return sendJson(response, 401, { ok: false, message: "كلمة مرور الإدارة غير صحيحة." }, origin);
     }
 
-    const content = sanitizeContent(parsed.content);
+    const content = normalizeContent(parsed.content);
     const uploads = sanitizeUploads(parsed.uploads);
     const headers = githubHeaders(token);
 
@@ -201,11 +166,18 @@ module.exports = async function handler(request, response) {
       headers
     });
 
-    return sendJson(response, 200, { ok: true, message: "Content saved to GitHub." });
+    return sendJson(response, 200, {
+      ok: true,
+      message: "تم الحفظ داخل GitHub. انتظر Vercel حتى ينشر التعديل.",
+      updatedAt: content.updatedAt,
+      uploadedFiles: uploads.length
+    }, origin);
   } catch (error) {
-    return sendJson(response, 500, {
+    const status = error instanceof ValidationError ? 422 : 500;
+    return sendJson(response, status, {
       ok: false,
-      message: error.message || "Unexpected CMS save error."
-    });
+      message: safeErrorMessage(error),
+      details: error instanceof ValidationError ? error.details : undefined
+    }, origin);
   }
 };

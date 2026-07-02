@@ -4,6 +4,7 @@
   const CONTENT_URL = "content/site-content.json";
   const PREVIEW_KEY = "portfolioCmsPreviewContent";
   const SAVE_URL = "/api/cms-save";
+  const DIAGNOSTICS_URL = "/api/diagnostics";
   const MAX_UPLOAD_BYTES = 1_800_000;
 
   let content = null;
@@ -300,6 +301,43 @@
     status("تم حذف المعاينة المحلية. أعد تحميل الموقع لرؤية النسخة المنشورة.", "success");
   }
 
+  async function runDiagnostics() {
+    const password = fields.adminPassword.value.trim();
+    if (!password) {
+      status("أدخل كلمة مرور الإدارة أولاً حتى يتم فحص الإعدادات بأمان.", "error");
+      return;
+    }
+
+    status("جاري فحص Vercel Environment Variables و GitHub Token...", "");
+
+    try {
+      const response = await fetch(DIAGNOSTICS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.message || "فشل فحص الإعدادات.");
+
+      const env = payload.checks?.env || {};
+      const github = payload.checks?.github || {};
+      const lines = [
+        payload.ok ? "الفحص ناجح: إعدادات النشر الأساسية تبدو صحيحة." : "الفحص اكتمل لكن يوجد نقص في الإعدادات.",
+        `ADMIN_PASSWORD: ${env.adminPassword ? "موجود" : "ناقص"}`,
+        `GITHUB_TOKEN: ${env.githubToken ? "موجود" : "ناقص"}`,
+        `GITHUB_OWNER: ${env.githubOwner ? "موجود" : "ناقص"}`,
+        `GITHUB_REPO: ${env.githubRepo ? "موجود" : "ناقص"}`,
+        `GitHub Token Valid: ${github.tokenValid ? "نعم" : "لا"}`,
+        `Repo Access: ${github.repoReadable ? "نعم" : "لا"}`,
+        github.message ? `Message: ${github.message}` : ""
+      ].filter(Boolean);
+
+      status(lines.join("\n"), payload.ok ? "success" : "error");
+    } catch (error) {
+      status(error.message || "فشل فحص الإعدادات.", "error");
+    }
+  }
+
   async function saveAndPublish() {
     syncBasicContent();
     const password = fields.adminPassword.value.trim();
@@ -367,6 +405,7 @@
     $("#addSocialBtn").addEventListener("click", addSocial);
     $("#previewBtn").addEventListener("click", previewLocal);
     $("#clearPreviewBtn").addEventListener("click", clearPreview);
+    $("#diagnosticsBtn").addEventListener("click", runDiagnostics);
     $("#saveBtn").addEventListener("click", saveAndPublish);
     $("#exportBtn").addEventListener("click", exportJson);
     fields.importFile.addEventListener("change", event => importJson(event.target.files?.[0]));
