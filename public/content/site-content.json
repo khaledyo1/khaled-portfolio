@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-02T07:01:16.674Z",
+  "updatedAt": "2026-07-02T07:29:38.848Z",
   "profile": {
     "name": "Khaled ALimawi",
     "title": {
@@ -59,7 +59,7 @@
       "label": "WhatsApp",
       "url": "https://wa.me/970599059159",
       "icon": "assets/social-icons/whatsapp.svg",
-      "enabled": true
+      "enabled": false
     },
     {
       "id": "github",
