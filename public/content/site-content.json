@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-02T06:59:07.799Z",
+  "updatedAt": "2026-07-02T06:59:52.134Z",
   "profile": {
     "name": "Khaled ALimawi",
     "title": {
@@ -52,7 +52,7 @@
       "label": "Gmail",
       "url": "mailto:khaled.yous3f19@gmail.com",
       "icon": "assets/social-icons/gmail.svg",
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "whatsapp",
