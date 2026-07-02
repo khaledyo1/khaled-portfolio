@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-02T10:21:10.020Z",
+  "updatedAt": "2026-07-02T00:00:00.000Z",
   "profile": {
-    "name": "Khaled Alimawi",
+    "name": "Khaled ALimawi",
     "title": {
       "en": "Software Developer",
       "ar": "مطور برمجيات"
@@ -19,22 +19,12 @@
       "en": "I’m Khaled ALimawi, focused on Computer Engineering and Software Development. I build practical websites, dashboards, and product prototypes with a clean visual system and reliable user experience.",
       "ar": "أنا خالد العماوي، أركز على هندسة الحاسوب وتطوير البرمجيات. أبني مواقع ولوحات تحكم ونماذج منتجات عملية بنظام بصري نظيف وتجربة استخدام واضحة."
     },
-    "heroImage": "assets/uploads/profile/hero-image-1782987560195.jpg",
+    "heroImage": "assets/images/khaled-portrait.webp",
     "avatarImage": "assets/images/khaled-avatar.webp",
-    "logoImage": "",
     "badges": [
-      {
-        "en": "Computer Engineering",
-        "ar": "هندسة حاسوب"
-      },
-      {
-        "en": "Software Development",
-        "ar": "تطوير برمجيات"
-      },
-      {
-        "en": "Clean UI",
-        "ar": "واجهات نظيفة"
-      }
+      { "en": "Computer Engineering", "ar": "هندسة حاسوب" },
+      { "en": "Software Development", "ar": "تطوير برمجيات" },
+      { "en": "Clean UI", "ar": "واجهات نظيفة" }
     ]
   },
   "contact": {
@@ -89,14 +79,8 @@
       "featured": true,
       "category": "web",
       "theme": "project-theme-klik",
-      "title": {
-        "en": "KlikStore",
-        "ar": "KlikStore"
-      },
-      "meta": {
-        "en": "Service Platform",
-        "ar": "منصة خدمات"
-      },
+      "title": { "en": "KlikStore", "ar": "KlikStore" },
+      "meta": { "en": "Service Platform", "ar": "منصة خدمات" },
       "description": {
         "en": "A service-booking platform that organizes trusted local service providers, customer requests, wallet balance, and request tracking in one responsive experience.",
         "ar": "منصة حجز خدمات تنظّم مزوّدي الخدمات المحليين، طلبات العملاء، المحفظة، وتتبع حالة الطلب داخل تجربة متجاوبة واحدة."
@@ -110,29 +94,17 @@
         "ar": "بطاقات خدمات منظمة، مسار طلب واضح، حالات تتبع، معاينة محفظة، وأقسام تحويل متجاوبة."
       },
       "image": "assets/project-previews/klikstore-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Responsive Front-End"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "Responsive Front-End"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     },
     {
       "id": "forgex-gym",
       "featured": true,
       "category": "web",
       "theme": "project-theme-ironcore",
-      "title": {
-        "en": "forgex gym",
-        "ar": "forgex gym"
-      },
-      "meta": {
-        "en": "Fitness Website",
-        "ar": "موقع جيم"
-      },
+      "title": { "en": "forgex gym", "ar": "forgex gym" },
+      "meta": { "en": "Fitness Website", "ar": "موقع جيم" },
       "description": {
         "en": "A bold fitness website for gym memberships, programs, trainers, pricing cards, and a direct conversion path for new members.",
         "ar": "موقع جيم قوي يعرض الاشتراكات، البرامج، المدربين، بطاقات الأسعار، ومسار تحويل واضح للأعضاء الجدد."
@@ -146,29 +118,17 @@
         "ar": "واجهة افتتاحية قوية، برامج، أقسام مدربين، بطاقات أسعار، رسائل تحفيزية، ومسار CTA مباشر."
       },
       "image": "assets/project-previews/forgex-gym-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Landing Page"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "Landing Page"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     },
     {
       "id": "simlink",
       "featured": true,
       "category": "web",
       "theme": "project-theme-simlink",
-      "title": {
-        "en": "SIMLink",
-        "ar": "SIMLink"
-      },
-      "meta": {
-        "en": "Telecom Landing Page",
-        "ar": "صفحة خدمات اتصالات"
-      },
+      "title": { "en": "SIMLink", "ar": "SIMLink" },
+      "meta": { "en": "Telecom Landing Page", "ar": "صفحة خدمات اتصالات" },
       "description": {
         "en": "A telecom landing page for new SIMs, replacement, porting, eSIM activation, delivery, coverage checks, and clear plan comparison.",
         "ar": "صفحة هبوط لخدمات الاتصالات تشمل شريحة جديدة، بدل فاقد، نقل رقم، تفعيل eSIM، التوصيل، فحص التغطية، ومقارنة الباقات."
@@ -182,29 +142,17 @@
         "ar": "مقارنة باقات واضحة، أقسام SIM و eSIM، فحص تغطية، خطوات توصيل، وأزرار تواصل مركزة."
       },
       "image": "assets/project-previews/simlink-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Responsive Design"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "Responsive Design"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     },
     {
       "id": "jil-loading-hub",
       "featured": false,
       "category": "ai",
       "theme": "project-theme-studyhub",
-      "title": {
-        "en": "jil loading hub",
-        "ar": "jil loading hub"
-      },
-      "meta": {
-        "en": "AI Study Tool",
-        "ar": "أداة دراسة بالذكاء الاصطناعي"
-      },
+      "title": { "en": "jil loading hub", "ar": "jil loading hub" },
+      "meta": { "en": "AI Study Tool", "ar": "أداة دراسة بالذكاء الاصطناعي" },
       "description": {
         "en": "An AI study workspace for summarizing topics, generating quizzes, creating flashcards, planning sessions, and tracking study progress.",
         "ar": "مساحة دراسة مدعومة بالذكاء الاصطناعي لتلخيص المواضيع، توليد الاختبارات، إنشاء بطاقات مراجعة، تخطيط الجلسات، وتتبع التقدم."
@@ -218,29 +166,17 @@
         "ar": "تصور مساحة دراسة بالذكاء الاصطناعي تشمل الملخصات، الاختبارات، البطاقات، تخطيط الجلسات، وتتبع التقدم."
       },
       "image": "assets/project-previews/jil-loading-hub-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "AI Flow"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "AI Flow"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     },
     {
       "id": "taskforge",
       "featured": false,
       "category": "dashboard",
       "theme": "project-theme-taskforge",
-      "title": {
-        "en": "TaskForge",
-        "ar": "TaskForge"
-      },
-      "meta": {
-        "en": "Productivity Dashboard",
-        "ar": "لوحة مهام"
-      },
+      "title": { "en": "TaskForge", "ar": "TaskForge" },
+      "meta": { "en": "Productivity Dashboard", "ar": "لوحة مهام" },
       "description": {
         "en": "A productivity dashboard for task boards, project progress, calendars, team members, performance charts, and activity feeds.",
         "ar": "لوحة إنتاجية لإدارة المهام، تقدم المشاريع، التقويم، أعضاء الفريق، مؤشرات الأداء، وسجل النشاط."
@@ -254,29 +190,17 @@
         "ar": "لوحة مهام، بطاقات تقدم، منطقة تقويم، عرض فريق، مؤشرات أداء، وتخطيط سجل نشاط."
       },
       "image": "assets/project-previews/taskforge-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Dashboard"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "Dashboard"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     },
     {
       "id": "mediqueue",
       "featured": false,
       "category": "dashboard",
       "theme": "project-theme-mediqueue",
-      "title": {
-        "en": "MediQueue",
-        "ar": "MediQueue"
-      },
-      "meta": {
-        "en": "Healthcare Dashboard",
-        "ar": "لوحة طبية"
-      },
+      "title": { "en": "MediQueue", "ar": "MediQueue" },
+      "meta": { "en": "Healthcare Dashboard", "ar": "لوحة طبية" },
       "description": {
         "en": "A healthcare appointment dashboard for patient queues, doctor schedules, waiting time, daily appointments, and clinic notifications.",
         "ar": "لوحة مواعيد طبية لإدارة طوابير المرضى، جداول الأطباء، وقت الانتظار، مواعيد اليوم، وإشعارات العيادة."
@@ -290,15 +214,9 @@
         "ar": "لوحة مواعيد تشمل حالات الطابور، جداول الأطباء، مؤشرات وقت الانتظار، مواعيد اليوم، والتنبيهات."
       },
       "image": "assets/project-previews/mediqueue-preview-card.webp",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Healthcare Dashboard"
-      ],
+      "tags": ["HTML", "CSS", "JavaScript", "Healthcare Dashboard"],
       "liveUrl": "",
-      "repoUrl": "",
-      "enabled": true
+      "repoUrl": ""
     }
   ]
 }

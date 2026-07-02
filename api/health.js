@@ -21,7 +21,8 @@ module.exports = function handler(req, res) {
     runtime: "vercel-serverless",
     configured: {
       gemini: Boolean(process.env.GEMINI_API_KEY),
-      cmsAdmin: Boolean(process.env.ADMIN_PASSWORD),
+      cmsAdmin: Boolean(process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD_HASH),
+      adminSessionSecret: Boolean(process.env.ADMIN_SESSION_SECRET),
       githubCms: Boolean(process.env.GITHUB_TOKEN && process.env.GITHUB_OWNER && process.env.GITHUB_REPO)
     }
   }, origin);

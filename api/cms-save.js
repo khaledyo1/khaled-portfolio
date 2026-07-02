@@ -8,6 +8,7 @@ const {
   sendJson
 } = require("../lib/server-utils");
 const { ValidationError, cleanString, normalizeContent } = require("../lib/cms-schema");
+const { requireAdminSession } = require("../lib/admin-auth");
 
 const CONTENT_PATH = "public/content/site-content.json";
 const LIMITS = Object.freeze({
@@ -128,17 +129,17 @@ module.exports = async function handler(request, response) {
   }
 
   try {
-    const adminPassword = requiredEnv("ADMIN_PASSWORD");
+    const session = requireAdminSession(request, { requireCsrf: true });
+    if (!session.ok) {
+      return sendJson(response, session.status, { ok: false, message: session.message }, origin);
+    }
+
     const token = requiredEnv("GITHUB_TOKEN");
     const owner = requiredEnv("GITHUB_OWNER");
     const repo = requiredEnv("GITHUB_REPO");
     const branch = process.env.GITHUB_BRANCH || "main";
 
     const parsed = await parseJsonBody(request, LIMITS.bodyBytes);
-    if (cleanString(parsed.password, 240) !== adminPassword) {
-      return sendJson(response, 401, { ok: false, message: "كلمة مرور الإدارة غير صحيحة." }, origin);
-    }
-
     const content = normalizeContent(parsed.content);
     const uploads = sanitizeUploads(parsed.uploads);
     const headers = githubHeaders(token);

@@ -4,10 +4,10 @@ const {
   cleanText,
   clientIp,
   isRateLimited,
-  parseJsonBody,
   resolveAllowedOrigin,
   sendJson
 } = require("../lib/server-utils");
+const { requireAdminSession } = require("../lib/admin-auth");
 
 const CONTENT_PATH = "public/content/site-content.json";
 
@@ -55,9 +55,9 @@ module.exports = async function handler(request, response) {
   }
 
   try {
-    const parsed = await parseJsonBody(request, 4_000);
-    if (cleanText(parsed.password, 240) !== process.env.ADMIN_PASSWORD) {
-      return sendJson(response, 401, { ok: false, message: "كلمة مرور الإدارة غير صحيحة." }, origin);
+    const session = requireAdminSession(request, { requireCsrf: true });
+    if (!session.ok) {
+      return sendJson(response, session.status, { ok: false, message: session.message }, origin);
     }
 
     const owner = process.env.GITHUB_OWNER || "";
@@ -67,7 +67,9 @@ module.exports = async function handler(request, response) {
 
     const checks = {
       env: {
-        adminPassword: envFlag("ADMIN_PASSWORD"),
+        adminPassword: envFlag("ADMIN_PASSWORD") || envFlag("ADMIN_PASSWORD_HASH"),
+        adminPasswordHash: envFlag("ADMIN_PASSWORD_HASH"),
+        adminSessionSecret: envFlag("ADMIN_SESSION_SECRET"),
         githubToken: envFlag("GITHUB_TOKEN"),
         githubOwner: envFlag("GITHUB_OWNER"),
         githubRepo: envFlag("GITHUB_REPO"),

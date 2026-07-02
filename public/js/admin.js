@@ -5,10 +5,15 @@
   const PREVIEW_KEY = "portfolioCmsPreviewContent";
   const SAVE_URL = "/api/cms-save";
   const DIAGNOSTICS_URL = "/api/diagnostics";
+  const AUTH_LOGIN_URL = "/api/auth-login";
+  const AUTH_SESSION_URL = "/api/auth-session";
+  const AUTH_LOGOUT_URL = "/api/auth-logout";
   const MAX_UPLOAD_BYTES = 1_800_000;
 
   let content = null;
   let pendingUploads = [];
+  let csrfToken = "";
+  let authenticated = false;
 
   const $ = selector => document.querySelector(selector);
   const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -29,6 +34,9 @@
     socialList: $("#socialList"),
     projectList: $("#projectList"),
     statusBox: $("#statusBox"),
+    sessionState: $("#sessionState"),
+    loginBtn: $("#loginBtn"),
+    logoutBtn: $("#logoutBtn"),
     adminPassword: $("#adminPassword"),
     importFile: $("#importFile")
   };
@@ -36,6 +44,92 @@
   function status(message, type = "") {
     fields.statusBox.textContent = message;
     fields.statusBox.className = `status ${type}`.trim();
+  }
+
+  function updateSessionState(isAuthenticated, expiresAt = "") {
+    authenticated = Boolean(isAuthenticated);
+    const card = fields.sessionState?.closest(".session-card");
+    if (card) card.dataset.state = authenticated ? "active" : "inactive";
+    fields.sessionState.textContent = authenticated
+      ? `جلسة الإدارة فعالة${expiresAt ? ` حتى ${new Date(expiresAt).toLocaleString("ar")}` : ""}.`
+      : "لا توجد جلسة فعالة. سجّل الدخول قبل فحص الإعدادات أو الحفظ والنشر.";
+  }
+
+  async function refreshSession(showMessage = false) {
+    try {
+      const response = await fetch(AUTH_SESSION_URL, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "same-origin"
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok && payload.authenticated && payload.csrfToken) {
+        csrfToken = payload.csrfToken;
+        updateSessionState(true, payload.expiresAt || "");
+        if (showMessage) status("جلسة الإدارة فعالة.", "success");
+        return true;
+      }
+    } catch (_) {}
+    csrfToken = "";
+    updateSessionState(false);
+    if (showMessage) status("لا توجد جلسة إدارة فعالة. سجّل الدخول أولاً.", "error");
+    return false;
+  }
+
+  async function loginAdmin() {
+    const password = fields.adminPassword.value.trim();
+    if (!password) {
+      status("أدخل كلمة مرور الإدارة أولاً.", "error");
+      return;
+    }
+
+    status("جاري تسجيل الدخول الآمن...", "");
+    try {
+      const response = await fetch(AUTH_LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ password })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok || !payload.csrfToken) {
+        throw new Error(payload.message || "فشل تسجيل الدخول.");
+      }
+      csrfToken = payload.csrfToken;
+      fields.adminPassword.value = "";
+      updateSessionState(true, payload.expiresAt || "");
+      status(payload.message || "تم تسجيل الدخول بنجاح.", "success");
+    } catch (error) {
+      csrfToken = "";
+      updateSessionState(false);
+      status(error.message || "فشل تسجيل الدخول.", "error");
+    }
+  }
+
+  async function logoutAdmin() {
+    try {
+      await fetch(AUTH_LOGOUT_URL, {
+        method: "POST",
+        credentials: "same-origin"
+      });
+    } catch (_) {}
+    csrfToken = "";
+    updateSessionState(false);
+    status("تم تسجيل الخروج من لوحة الإدارة.", "success");
+  }
+
+  async function requireSession() {
+    if (authenticated && csrfToken) return true;
+    const ok = await refreshSession(false);
+    if (!ok) status("سجّل الدخول أولاً، ثم أعد تنفيذ العملية.", "error");
+    return ok;
+  }
+
+  function authHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": csrfToken
+    };
   }
 
   function escapeHtml(value) {
@@ -302,28 +396,32 @@
   }
 
   async function runDiagnostics() {
-    const password = fields.adminPassword.value.trim();
-    if (!password) {
-      status("أدخل كلمة مرور الإدارة أولاً حتى يتم فحص الإعدادات بأمان.", "error");
-      return;
-    }
+    const sessionOk = await requireSession();
+    if (!sessionOk) return;
 
     status("جاري فحص Vercel Environment Variables و GitHub Token...", "");
 
     try {
       const response = await fetch(DIAGNOSTICS_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
+        headers: authHeaders(),
+        credentials: "same-origin",
+        body: JSON.stringify({})
       });
       const payload = await response.json().catch(() => ({}));
+      if (response.status === 401 || response.status === 403) {
+        csrfToken = "";
+        updateSessionState(false);
+      }
       if (!response.ok) throw new Error(payload.message || "فشل فحص الإعدادات.");
 
       const env = payload.checks?.env || {};
       const github = payload.checks?.github || {};
       const lines = [
         payload.ok ? "الفحص ناجح: إعدادات النشر الأساسية تبدو صحيحة." : "الفحص اكتمل لكن يوجد نقص في الإعدادات.",
-        `ADMIN_PASSWORD: ${env.adminPassword ? "موجود" : "ناقص"}`,
+        `ADMIN_PASSWORD / HASH: ${env.adminPassword ? "موجود" : "ناقص"}`,
+        `ADMIN_PASSWORD_HASH: ${env.adminPasswordHash ? "موجود" : "غير مستخدم"}`,
+        `ADMIN_SESSION_SECRET: ${env.adminSessionSecret ? "موجود" : "غير مستخدم"}`,
         `GITHUB_TOKEN: ${env.githubToken ? "موجود" : "ناقص"}`,
         `GITHUB_OWNER: ${env.githubOwner ? "موجود" : "ناقص"}`,
         `GITHUB_REPO: ${env.githubRepo ? "موجود" : "ناقص"}`,
@@ -340,21 +438,23 @@
 
   async function saveAndPublish() {
     syncBasicContent();
-    const password = fields.adminPassword.value.trim();
-    if (!password) {
-      status("أدخل كلمة مرور الإدارة أولاً.", "error");
-      return;
-    }
+    const sessionOk = await requireSession();
+    if (!sessionOk) return;
 
     status("جاري الحفظ داخل GitHub...", "");
 
     try {
       const response = await fetch(SAVE_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, content, uploads: pendingUploads })
+        headers: authHeaders(),
+        credentials: "same-origin",
+        body: JSON.stringify({ content, uploads: pendingUploads })
       });
       const payload = await response.json().catch(() => ({}));
+      if (response.status === 401 || response.status === 403) {
+        csrfToken = "";
+        updateSessionState(false);
+      }
       if (!response.ok || !payload.ok) throw new Error(payload.message || "فشل الحفظ.");
       pendingUploads = [];
       localStorage.removeItem(PREVIEW_KEY);
@@ -405,6 +505,8 @@
     $("#addSocialBtn").addEventListener("click", addSocial);
     $("#previewBtn").addEventListener("click", previewLocal);
     $("#clearPreviewBtn").addEventListener("click", clearPreview);
+    fields.loginBtn.addEventListener("click", loginAdmin);
+    fields.logoutBtn.addEventListener("click", logoutAdmin);
     $("#diagnosticsBtn").addEventListener("click", runDiagnostics);
     $("#saveBtn").addEventListener("click", saveAndPublish);
     $("#exportBtn").addEventListener("click", exportJson);
@@ -432,6 +534,7 @@
       await loadInitialContent();
       fillForm();
       bindEvents();
+      await refreshSession(false);
     } catch (error) {
       status(error.message, "error");
     }
