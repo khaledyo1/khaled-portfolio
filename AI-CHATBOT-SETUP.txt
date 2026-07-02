@@ -1,0 +1,24 @@
+AI CHATBOT SETUP
+
+The chatbot is connected through a Vercel Serverless Function:
+
+Frontend endpoint:
+/api/chat
+
+Backend file:
+api/chat.js
+
+Required server environment variables:
+GEMINI_API_KEY=your_real_gemini_key
+GEMINI_MODEL=gemini-2.5-flash
+
+Recommended production variables:
+SITE_ORIGIN=https://your-final-domain.vercel.app
+ALLOWED_ORIGINS=https://your-final-domain.vercel.app
+
+Do not place Gemini keys in frontend JavaScript, HTML, CSS, GitHub, or screenshots.
+
+Deployment test endpoint:
+/api/health
+
+Expected /api/health response is ok:true with status:"ready". It intentionally does not reveal whether the Gemini key is configured. If Gemini replies fail, check Vercel Environment Variables and function logs.

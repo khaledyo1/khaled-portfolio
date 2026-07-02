@@ -1,0 +1,20 @@
+KHALED PORTFOLIO - PRODUCTION CHECKLIST
+
+Before deploy:
+[ ] Replace placeholder domain in sitemap.xml / robots.txt / canonical / Open Graph if your Vercel URL is different.
+[ ] Add GEMINI_API_KEY in Vercel Environment Variables.
+[ ] Set GEMINI_MODEL=gemini-2.5-flash or another supported model available in your Google AI Studio project.
+[ ] Set SITE_ORIGIN and ALLOWED_ORIGINS to the final domain.
+[ ] Deploy to Vercel.
+
+After deploy:
+[ ] Visit /api/health and confirm {"ok":true,"status":"ready"}.
+[ ] Test chatbot Arabic response.
+[ ] Test chatbot English response.
+[ ] Test WhatsApp CTA.
+[ ] Test Download CV.
+[ ] Test Dark/Light mode.
+[ ] Test Arabic/English switch.
+[ ] Test Projects pagination.
+[ ] Test mobile layout.
+[ ] Check browser console for errors.

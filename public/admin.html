@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Portfolio Admin | Khaled ALimawi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>لوحة تعديل البورتفوليو</h1>
+        <p>من هنا تقدر تغيّر الصورة الرئيسية، بيانات التواصل، روابط السوشيال ميديا، وتضيف/تحذف/تعدل المشاريع. الحفظ النهائي يحتاج إعداد متغيرات GitHub داخل Vercel مرة واحدة فقط.</p>
+      </div>
+      <div class="admin-actions">
+        <a class="btn ghost" href="index.html" target="_blank" rel="noopener noreferrer">فتح الموقع</a>
+        <button class="btn ghost" id="exportBtn" type="button">تصدير JSON</button>
+        <label class="btn ghost" for="importFile">استيراد JSON</label>
+        <input class="hidden" id="importFile" type="file" accept="application/json" />
+      </div>
+    </header>
+
+    <div class="notice">
+      <strong>مهم:</strong> زر “معاينة محلية” يطبق التغييرات على جهازك فقط. زر “حفظ ونشر” يحدّث ملف <code>public/content/site-content.json</code> داخل GitHub ويعمل Redeploy تلقائي عبر Vercel إذا ضبطت المتغيرات المطلوبة.
+    </div>
+
+    <section class="admin-grid">
+      <aside class="admin-sidebar" aria-label="Admin sections">
+        <button class="admin-tab active" data-tab="profile" type="button">الصورة والواجهة الرئيسية</button>
+        <button class="admin-tab" data-tab="contacts" type="button">التواصل والسوشيال</button>
+        <button class="admin-tab" data-tab="projects" type="button">المشاريع</button>
+        <button class="admin-tab" data-tab="publish" type="button">الحفظ والنشر</button>
+      </aside>
+
+      <form id="adminForm" autocomplete="off">
+        <section class="admin-panel active" data-panel="profile">
+          <div class="panel-title">
+            <div>
+              <h2>الصورة والواجهة الرئيسية</h2>
+              <p>عدّل النص الأساسي والصورة التي تظهر في الصفحة الرئيسية.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label class="field"><span>الاسم</span><input id="profileName" /></label>
+            <label class="field"><span>المسمى المهني EN</span><input id="profileTitleEn" /></label>
+            <label class="field"><span>العنوان الرئيسي EN</span><textarea id="heroHeadlineEn"></textarea></label>
+            <label class="field"><span>العنوان الرئيسي AR</span><textarea id="heroHeadlineAr"></textarea></label>
+            <label class="field"><span>الوصف EN</span><textarea id="heroLeadEn"></textarea></label>
+            <label class="field"><span>الوصف AR</span><textarea id="heroLeadAr"></textarea></label>
+            <label class="field"><span>الصورة الرئيسية الحالية</span><input id="heroImage" placeholder="assets/images/khaled-portrait.webp" /></label>
+            <label class="field"><span>رفع صورة رئيسية جديدة</span><input id="heroImageUpload" type="file" accept="image/png,image/jpeg,image/webp" /><img class="preview-img" id="heroPreview" alt="معاينة الصورة" /></label>
+          </div>
+        </section>
+
+        <section class="admin-panel" data-panel="contacts">
+          <div class="panel-title">
+            <div>
+              <h2>التواصل والسوشيال ميديا</h2>
+              <p>غيّر الإيميل، واتساب، وروابط المنصات الظاهرة في الهيدر والفوتر وصفحة التواصل.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label class="field"><span>الإيميل</span><input id="contactEmail" type="email" /></label>
+            <label class="field"><span>رقم واتساب بدون +</span><input id="contactWhatsapp" placeholder="970599059159" /></label>
+            <label class="field"><span>رقم العرض</span><input id="contactPhone" placeholder="+970599059159" /></label>
+          </div>
+          <hr style="border-color: rgba(148,163,184,.22); margin: 22px 0;" />
+          <div class="social-list" id="socialList"></div>
+          <div class="editor-actions">
+            <button class="btn ghost" id="addSocialBtn" type="button">إضافة رابط اجتماعي</button>
+          </div>
+        </section>
+
+        <section class="admin-panel" data-panel="projects">
+          <div class="panel-title">
+            <div>
+              <h2>المشاريع</h2>
+              <p>أضف مشروعاً، احذف مشروعاً، غيّر التصنيف، الصورة، النصوص، والروابط.</p>
+            </div>
+            <button class="btn primary" id="addProjectBtn" type="button">إضافة مشروع</button>
+          </div>
+          <div class="project-list" id="projectList"></div>
+        </section>
+
+        <section class="admin-panel" data-panel="publish">
+          <div class="panel-title">
+            <div>
+              <h2>الحفظ والنشر</h2>
+              <p>استخدم المعاينة قبل النشر. للحفظ النهائي أدخل كلمة مرور الإدارة التي ستضعها في Vercel.</p>
+            </div>
+          </div>
+          <div class="form-grid full">
+            <label class="field"><span>كلمة مرور الإدارة</span><input id="adminPassword" type="password" placeholder="ADMIN_PASSWORD" /></label>
+          </div>
+          <div class="editor-actions">
+            <button class="btn ghost" id="previewBtn" type="button">معاينة محلية</button>
+            <button class="btn danger" id="clearPreviewBtn" type="button">حذف المعاينة المحلية</button>
+            <button class="btn primary" id="saveBtn" type="button">حفظ ونشر</button>
+          </div>
+          <p class="small">إذا لم تضبط GitHub Token داخل Vercel، سيعمل التصدير والمعاينة فقط. هذه طبقة أمان مقصودة حتى لا يوجد Token مكشوف في المتصفح.</p>
+          <div class="status" id="statusBox">جاهز للتعديل.</div>
+        </section>
+      </form>
+    </section>
+  </main>
+  <script src="js/admin.js" defer></script>
+</body>
+</html>

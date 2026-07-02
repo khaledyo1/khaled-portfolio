@@ -1736,32 +1736,3 @@ html[data-theme="dark"] .chat-direct { background: #064e3b; color: #dcfce7; bord
   .chat-direct,
   .chat-form button { transition: none; }
 }
-
-/* Contact API form feedback */
-.contact-hp {
-  position: absolute !important;
-  left: -9999px !important;
-  width: 1px !important;
-  height: 1px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.form-status {
-  min-height: 1.5rem;
-  margin-top: 0.85rem;
-  font-weight: 700;
-}
-
-.form-status.success {
-  color: #22c55e;
-}
-
-.form-status.error {
-  color: #fb7185;
-}
-
-button[disabled] {
-  cursor: not-allowed;
-  opacity: 0.75;
-}

@@ -1,0 +1,21 @@
+Khaled Portfolio - Final Production Report
+=========================================
+
+Production domain:
+https://khaled-portfolio-gules.vercel.app
+
+Final changes included in this build:
+- Canonical, Open Graph, Twitter image URLs, JSON-LD URLs, sitemap.xml, and robots.txt now use the production Vercel domain.
+- Removed-project cleanup remains intact.
+- Gemini chatbot fallback handling is enabled before external API calls for common service/project/security questions.
+- Dark mode color refactor and GitHub icon visibility fix remain included.
+
+Deployment checklist:
+1. Replace existing repository files with this build, preserving the .git folder.
+2. Commit: Final production polish
+3. Push to GitHub.
+4. Let Vercel deploy automatically.
+5. Confirm /api/health returns ok:true and status:"ready".
+6. Run a short chatbot test in Arabic and English.
+
+Do not commit any .env file.

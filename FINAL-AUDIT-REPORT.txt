@@ -1,0 +1,36 @@
+FINAL AUDIT REPORT - HARDENED CLEAN-CODE PASS
+
+Scope:
+- Vercel deployment readiness
+- Gemini API serverless integration hardening
+- Production documentation
+
+Added:
+- api/health.js
+- VERCEL-GEMINI-DEPLOYMENT.md
+- PRODUCTION-CHECKLIST.txt
+- package.json
+
+Hardened:
+- api/chat.js request parsing and deterministic fallback order
+- request size limit
+- origin validation
+- bounded in-memory rate limit cleanup
+- Gemini fetch timeout
+- no-store API headers
+- noindex API headers
+- safe model name validation
+- shared server utility module
+- early UI init moved from duplicated inline scripts to js/init.js
+
+Environment variables:
+- GEMINI_API_KEY required
+- GEMINI_MODEL optional, default gemini-2.5-flash
+- SITE_ORIGIN optional/recommended
+- ALLOWED_ORIGINS optional/recommended
+
+Status:
+- Syntax check passed for API, lib, and frontend JavaScript
+- No frontend API keys
+- No external dependencies
+- Ready for Vercel deployment after environment variables are added

@@ -1,26 +1,17 @@
 {
-  "name": "khaled-portfolio-express-contact-ready",
+  "name": "khaled-alimawi-portfolio",
   "version": "1.0.0",
   "private": true,
-  "description": "Khaled ALimawi portfolio with a secure Node.js + Express backend for the contact form.",
-  "main": "server.js",
+  "description": "Adjustable bilingual portfolio with Vercel serverless chatbot and GitHub-backed CMS admin panel.",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "check": "node scripts/check-syntax.js",
-    "doctor": "node scripts/check-syntax.js && node scripts/doctor.js"
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "check": "node --check api/chat.js && node --check api/health.js && node --check api/cms-save.js && node --check lib/server-utils.js && node --check public/js/init.js && node --check public/js/main.js && node --check public/js/cms.js && node --check public/js/admin.js && node --check public/js/project.js",
+    "serve": "npx serve public"
   },
   "engines": {
     "node": ">=20"
   },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "express-rate-limit": "^7.5.1",
-    "express-validator": "^7.2.1",
-    "helmet": "^8.0.0",
-    "nodemailer": "^6.9.16"
-  }
+  "dependencies": {}
 }

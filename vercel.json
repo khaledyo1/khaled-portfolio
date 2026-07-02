@@ -1,0 +1,66 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 30,
+      "memory": 256
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-/wZo3vMdTBHCYcFLAGxr/hWGEUwdhvBC5hXF7mW7e9M=' 'sha256-64li2EPKYgZ0CyJRIsan3/R5ZSfFNNIPM8YouUaHqN0=' 'sha256-6hLT2FA2Wab+8u4OR8TJNy/7lXCsJTGvDV/O90GAt7g=' 'sha256-CXQ+9rP4WKFzbPdgf6Y5frqLjXJs7MaJK8EO1I5PXn4=' 'sha256-CY/nxbup+3anE4fhV0yVAImkb9OkLtXYP7ELGHr114U=' 'sha256-DMD9oPHf0YqxuiLGkLLiTEaRR7+WftEZqWASKG+Asj4=' 'sha256-HD8OOroDdbuT7l+2vy7xXldOD8X0M5lShObF8uhwDjA=' 'sha256-MWH8DGZvye37eCcrPNCUWYdZEfrjtrixO/TQ4GZqBnM=' 'sha256-arbxgJw2bBq+ryks3nrTTNOfcB4JEZjhjweegmHVWZk=' 'sha256-b3NkGvzjeYFiFlrfXplYpMgFAxsCzsDkueSSLOn6Tqc=' 'sha256-cY+RSjZxNLXJnP4o4za+ziJs2X2EpnZL5YX00L5OAaU=' 'sha256-igq3dWlmMwa6m7Zyfkyl13dJOGvtmrAL5dZNwa8tdIQ=' 'sha256-kjmvqM6/tTdaww8WvnzxJzTzPWrzV3Km06bKGsAErSY=' 'sha256-w91nIwI3q9xBgY79ztiK4PdBuPR3ZkF0gkj2ILu7Fig=' 'sha256-wTo2KF6FVFMrTpvJtq5Lj24S6SZGnZNnV3J8w6nngTo='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; form-action 'self' mailto: https://wa.me; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=()"
+        }
+      ]
+    }
+  ]
+}
