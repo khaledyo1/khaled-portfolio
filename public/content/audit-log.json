@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-03T11:49:20.478Z",
+  "updatedAt": "2026-07-03T11:49:22.101Z",
   "records": [
     {
       "id": "audit_1783079224952_5145411ae9",
@@ -41,6 +41,16 @@
       "commitSha": "b323b16d7b3afc63ada883be89dda14816d630e0",
       "targetPath": "public/content/site-content.json",
       "backupPath": "public/content/backups/site-content-2026-07-03T11-49-19-459Z.json"
+    },
+    {
+      "id": "audit_1783079362101_363ea0d0f8",
+      "action": "rollback_completed",
+      "timestamp": "2026-07-03T11:49:22.101Z",
+      "status": "success",
+      "message": "Rollback completed successfully.",
+      "commitSha": "7c0be3c43b7e6657d3034790ac88b09629d6e528",
+      "targetPath": "public/content/site-content.json",
+      "backupPath": "public/content/backups/site-content-2026-07-03T11-47-04-098Z.json"
     }
   ]
 }
