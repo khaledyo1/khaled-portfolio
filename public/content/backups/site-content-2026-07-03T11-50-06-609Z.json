@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "timestamp": "2026-07-03T11:50:06.610Z",
+  "sourcePath": "public/content/site-content.json",
+  "sourceSha": "a2dd13af28cbc5cf75cc4b1675a6df2a05e5e4e2",
+  "operation": "cms_save",
+  "metadata": {
+    "uploads": "0",
+    "ip": "213.6.237.101"
+  },
+  "content": {
+    "version": 1,
+    "updatedAt": "2026-07-03T11:49:19.326Z",
+    "profile": {
+      "name": "Khaled ALimawi",
+      "title": {
+        "en": "Software Developer",
+        "ar": "مطور برمجيات"
+      },
+      "heroKicker": {
+        "en": "AVAILABLE FOR OPPORTUNITIES",
+        "ar": "متاح للفرص"
+      },
+      "heroHeadline": {
+        "en": "I build clean digital interfaces for real ideas.",
+        "ar": "أبني واجهات رقمية نظيفة لأفكار حقيقية."
+      },
+      "heroLead": {
+        "en": "I’m Khaled ALimawi, focused on Computer Engineering and Software Development. I build practical websites, dashboards, and product prototypes with a clean visual system and reliable user experience.",
+        "ar": "أنا خالد العماوي، أركز على هندسة الحاسوب وتطوير البرمجيات. أبني مواقع ولوحات تحكم ونماذج منتجات عملية بنظام بصري نظيف وتجربة استخدام واضحة."
+      },
+      "heroImage": "assets/images/khaled-portrait.webp",
+      "avatarImage": "assets/images/khaled-avatar.webp",
+      "logoImage": "",
+      "badges": [
+        {
+          "en": "Computer Engineering",
+          "ar": "هندسة حاسوب"
+        },
+        {
+          "en": "Software Development",
+          "ar": "تطوير برمجيات"
+        },
+        {
+          "en": "Clean UI",
+          "ar": "واجهات نظيفة"
+        }
+      ]
+    },
+    "contact": {
+      "email": "khaled.yous3f19@gmail.com",
+      "phone": "+970599059159",
+      "whatsappNumber": "970599059159",
+      "location": {
+        "en": "Palestine",
+        "ar": "فلسطين"
+      }
+    },
+    "socials": [
+      {
+        "id": "gmail",
+        "label": "Gmail",
+        "url": "mailto:khaled.yous3f19@gmail.com",
+        "icon": "assets/social-icons/gmail.svg",
+        "enabled": true
+      },
+      {
+        "id": "whatsapp",
+        "label": "WhatsApp",
+        "url": "https://wa.me/970599059159",
+        "icon": "assets/social-icons/whatsapp.svg",
+        "enabled": true
+      },
+      {
+        "id": "github",
+        "label": "GitHub",
+        "url": "https://github.com/khaledyo1",
+        "icon": "assets/social-icons/github.svg",
+        "enabled": true
+      },
+      {
+        "id": "linkedin",
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/khaled-y-alimawi-ba2178386",
+        "icon": "assets/social-icons/linkedin.svg",
+        "enabled": true
+      },
+      {
+        "id": "instagram",
+        "label": "Instagram",
+        "url": "https://www.instagram.com/khale.dy1/?hl=en",
+        "icon": "assets/social-icons/instagram.svg",
+        "enabled": true
+      }
+    ],
+    "projects": [
+      {
+        "id": "klikstore",
+        "featured": true,
+        "category": "web",
+        "theme": "project-theme-klik",
+        "title": {
+          "en": "KlikStore",
+          "ar": "KlikStore"
+        },
+        "meta": {
+          "en": "Service Platform",
+          "ar": "منصة خدمات"
+        },
+        "description": {
+          "en": "A service-booking platform that organizes trusted local service providers, customer requests, wallet balance, and request tracking in one responsive experience.",
+          "ar": "منصة حجز خدمات تنظّم مزوّدي الخدمات المحليين، طلبات العملاء، المحفظة، وتتبع حالة الطلب داخل تجربة متجاوبة واحدة."
+        },
+        "problem": {
+          "en": "Service requests were scattered across messages with no clear path for categories, pricing, or status.",
+          "ar": "طلبات الخدمات كانت متفرقة داخل الرسائل بدون مسار واضح للتصنيفات أو الأسعار أو حالة الطلب."
+        },
+        "delivered": {
+          "en": "Structured service cards, request flow, tracking states, wallet preview, and responsive conversion sections.",
+          "ar": "بطاقات خدمات منظمة، مسار طلب واضح، حالات تتبع، معاينة محفظة، وأقسام تحويل متجاوبة."
+        },
+        "image": "assets/project-previews/klikstore-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Responsive Front-End"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      },
+      {
+        "id": "forgex-gym",
+        "featured": true,
+        "category": "web",
+        "theme": "project-theme-ironcore",
+        "title": {
+          "en": "forgex gym",
+          "ar": "forgex gym"
+        },
+        "meta": {
+          "en": "Fitness Website",
+          "ar": "موقع جيم"
+        },
+        "description": {
+          "en": "A bold fitness website for gym memberships, programs, trainers, pricing cards, and a direct conversion path for new members.",
+          "ar": "موقع جيم قوي يعرض الاشتراكات، البرامج، المدربين، بطاقات الأسعار، ومسار تحويل واضح للأعضاء الجدد."
+        },
+        "problem": {
+          "en": "Fitness pages often show generic content without pushing visitors toward membership inquiries.",
+          "ar": "صفحات الجيم غالباً تعرض محتوى عاماً بدون دفع الزائر لاتخاذ خطوة اشتراك أو استفسار واضحة."
+        },
+        "delivered": {
+          "en": "A strong hero, programs, trainer sections, pricing cards, transformation messaging, and direct CTA flow.",
+          "ar": "واجهة افتتاحية قوية، برامج، أقسام مدربين، بطاقات أسعار، رسائل تحفيزية، ومسار CTA مباشر."
+        },
+        "image": "assets/project-previews/forgex-gym-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Landing Page"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      },
+      {
+        "id": "simlink",
+        "featured": true,
+        "category": "web",
+        "theme": "project-theme-simlink",
+        "title": {
+          "en": "SIMLink",
+          "ar": "SIMLink"
+        },
+        "meta": {
+          "en": "Telecom Landing Page",
+          "ar": "صفحة خدمات اتصالات"
+        },
+        "description": {
+          "en": "A telecom landing page for new SIMs, replacement, porting, eSIM activation, delivery, coverage checks, and clear plan comparison.",
+          "ar": "صفحة هبوط لخدمات الاتصالات تشمل شريحة جديدة، بدل فاقد، نقل رقم، تفعيل eSIM، التوصيل، فحص التغطية، ومقارنة الباقات."
+        },
+        "problem": {
+          "en": "Telecom services can be confusing when plans, activation types, and support steps are not organized.",
+          "ar": "خدمات الاتصالات تصبح مربكة عندما لا تكون الباقات وأنواع التفعيل وخطوات الدعم منظمة."
+        },
+        "delivered": {
+          "en": "Clear plan comparison, SIM/eSIM service sections, coverage checks, delivery steps, and focused contact CTAs.",
+          "ar": "مقارنة باقات واضحة، أقسام SIM و eSIM، فحص تغطية، خطوات توصيل، وأزرار تواصل مركزة."
+        },
+        "image": "assets/project-previews/simlink-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Responsive Design"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      },
+      {
+        "id": "jil-loading-hub",
+        "featured": false,
+        "category": "ai",
+        "theme": "project-theme-studyhub",
+        "title": {
+          "en": "jil loading hub",
+          "ar": "jil loading hub"
+        },
+        "meta": {
+          "en": "AI Study Tool",
+          "ar": "أداة دراسة بالذكاء الاصطناعي"
+        },
+        "description": {
+          "en": "An AI study workspace for summarizing topics, generating quizzes, creating flashcards, planning sessions, and tracking study progress.",
+          "ar": "مساحة دراسة مدعومة بالذكاء الاصطناعي لتلخيص المواضيع، توليد الاختبارات، إنشاء بطاقات مراجعة، تخطيط الجلسات، وتتبع التقدم."
+        },
+        "problem": {
+          "en": "Students often jump between notes, quizzes, summaries, and planning tools without a unified study workflow.",
+          "ar": "الطلاب غالباً يتنقلون بين الملاحظات والاختبارات والملخصات وأدوات التخطيط دون سير دراسة موحد."
+        },
+        "delivered": {
+          "en": "AI study workspace concept with summaries, quizzes, flashcards, session planning, and progress tracking.",
+          "ar": "تصور مساحة دراسة بالذكاء الاصطناعي تشمل الملخصات، الاختبارات، البطاقات، تخطيط الجلسات، وتتبع التقدم."
+        },
+        "image": "assets/project-previews/jil-loading-hub-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "AI Flow"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      },
+      {
+        "id": "taskforge",
+        "featured": false,
+        "category": "dashboard",
+        "theme": "project-theme-taskforge",
+        "title": {
+          "en": "TaskForge",
+          "ar": "TaskForge"
+        },
+        "meta": {
+          "en": "Productivity Dashboard",
+          "ar": "لوحة مهام"
+        },
+        "description": {
+          "en": "A productivity dashboard for task boards, project progress, calendars, team members, performance charts, and activity feeds.",
+          "ar": "لوحة إنتاجية لإدارة المهام، تقدم المشاريع، التقويم، أعضاء الفريق، مؤشرات الأداء، وسجل النشاط."
+        },
+        "problem": {
+          "en": "Teams need one clean place to understand tasks, progress, calendars, members, and activity without visual noise.",
+          "ar": "الفرق تحتاج مكاناً واحداً واضحاً لفهم المهام والتقدم والتقويم والأعضاء والنشاط بدون ازدحام بصري."
+        },
+        "delivered": {
+          "en": "Task board, progress cards, calendar area, team view, performance charts, and activity feed layout.",
+          "ar": "لوحة مهام، بطاقات تقدم، منطقة تقويم، عرض فريق، مؤشرات أداء، وتخطيط سجل نشاط."
+        },
+        "image": "assets/project-previews/taskforge-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Dashboard"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      },
+      {
+        "id": "mediqueue",
+        "featured": false,
+        "category": "dashboard",
+        "theme": "project-theme-mediqueue",
+        "title": {
+          "en": "MediQueue",
+          "ar": "MediQueue"
+        },
+        "meta": {
+          "en": "Healthcare Dashboard",
+          "ar": "لوحة طبية"
+        },
+        "description": {
+          "en": "A healthcare appointment dashboard for patient queues, doctor schedules, waiting time, daily appointments, and clinic notifications.",
+          "ar": "لوحة مواعيد طبية لإدارة طوابير المرضى، جداول الأطباء، وقت الانتظار، مواعيد اليوم، وإشعارات العيادة."
+        },
+        "problem": {
+          "en": "Clinics need a simple way to organize queues, schedules, waiting times, and patient status without confusing staff.",
+          "ar": "العيادات تحتاج طريقة بسيطة لتنظيم الطوابير والجداول ووقت الانتظار وحالة المرضى بدون إرباك الطاقم."
+        },
+        "delivered": {
+          "en": "Appointment dashboard with queue states, doctor schedules, waiting-time indicators, daily appointments, and alerts.",
+          "ar": "لوحة مواعيد تشمل حالات الطابور، جداول الأطباء، مؤشرات وقت الانتظار، مواعيد اليوم، والتنبيهات."
+        },
+        "image": "assets/project-previews/mediqueue-preview-card.webp",
+        "tags": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Healthcare Dashboard"
+        ],
+        "liveUrl": "",
+        "repoUrl": "",
+        "enabled": true
+      }
+    ]
+  }
+}
