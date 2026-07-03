@@ -257,6 +257,7 @@
     content.contact.phone = fields.contactPhone.value.trim();
 
     content.socials = readSocials();
+    syncContactSocialUrls();
     content.projects = readProjects();
     content.updatedAt = new Date().toISOString();
   }
@@ -289,6 +290,19 @@
       icon: item.querySelector('[data-social-field="icon"]').value.trim(),
       enabled: item.querySelector('[data-social-field="enabled"]').value === "true"
     })).filter(item => item.id && item.url);
+  }
+
+
+  function syncContactSocialUrls() {
+    const whatsapp = String(content?.contact?.whatsappNumber || "").replace(/[^0-9]/g, "");
+    const email = String(content?.contact?.email || "").trim().toLowerCase();
+
+    content.socials = (Array.isArray(content.socials) ? content.socials : []).map(item => {
+      if (!item || typeof item !== "object") return item;
+      if (item.id === "whatsapp" && whatsapp) return { ...item, url: `https://wa.me/${whatsapp}` };
+      if ((item.id === "gmail" || item.id === "email") && email) return { ...item, url: `mailto:${email}` };
+      return item;
+    });
   }
 
   function projectTemplate(project = {}, index = 0) {

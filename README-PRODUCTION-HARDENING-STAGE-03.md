@@ -84,3 +84,8 @@ This stage adds production-grade data safety to the adjustable portfolio CMS.
 12. Test unauthenticated access to `/api/cms-backups` and confirm it is rejected.
 13. Test POST `/api/cms-rollback` without CSRF and confirm it is rejected.
 14. Temporarily use a bad GitHub token in Preview and confirm the UI shows a safe error.
+
+
+## Patch note
+
+This build also synchronizes `contact.whatsappNumber` with the WhatsApp social link so changing the WhatsApp number from the admin panel updates rendered WhatsApp buttons reliably.

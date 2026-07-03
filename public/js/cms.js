@@ -67,7 +67,17 @@
   }
 
   function getEnabledSocials(content) {
-    return Array.isArray(content?.socials) ? content.socials.filter(item => item && item.enabled !== false) : [];
+    const socials = Array.isArray(content?.socials) ? content.socials : [];
+    const wa = whatsappUrl(content);
+    const email = emailUrl(content);
+
+    return socials
+      .filter(item => item && item.enabled !== false)
+      .map(item => {
+        if (item.id === "whatsapp" && wa) return { ...item, url: wa };
+        if ((item.id === "gmail" || item.id === "email") && email) return { ...item, url: email };
+        return item;
+      });
   }
 
   function whatsappUrl(content) {
