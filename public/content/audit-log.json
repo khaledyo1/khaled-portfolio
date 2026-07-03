@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-03T15:14:01.341Z",
+  "records": [
+    {
+      "id": "audit_1783091641341_22ca89fdcc",
+      "action": "backup_created",
+      "timestamp": "2026-07-03T15:14:01.341Z",
+      "status": "success",
+      "message": "Created backup before CMS save.",
+      "commitSha": "4ad23901eb21b0964f4f1607fb712b54039b4d7f",
+      "targetPath": "public/content/site-content.json",
+      "backupPath": "public/content/backups/site-content-2026-07-03T15-14-00-502Z.json"
+    }
+  ]
+}
