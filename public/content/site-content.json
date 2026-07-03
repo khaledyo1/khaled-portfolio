@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-03T15:14:00.287Z",
+  "updatedAt": "2026-07-03T15:17:42.496Z",
   "profile": {
     "name": "Khaled ALimawi",
     "title": {
@@ -40,7 +40,7 @@
   "contact": {
     "email": "khaled.yous3f19@gmail.com",
     "phone": "+970599059159",
-    "whatsappNumber": "9707546663",
+    "whatsappNumber": "970599059159",
     "location": {
       "en": "Palestine",
       "ar": "فلسطين"
@@ -57,7 +57,7 @@
     {
       "id": "whatsapp",
       "label": "WhatsApp",
-      "url": "https://wa.me/9707546663",
+      "url": "https://wa.me/970599059159",
       "icon": "assets/social-icons/whatsapp.svg",
       "enabled": true
     },
