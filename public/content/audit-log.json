@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-03T15:17:43.643Z",
+  "updatedAt": "2026-07-03T15:17:45.106Z",
   "records": [
     {
       "id": "audit_1783091641341_22ca89fdcc",
@@ -29,6 +29,16 @@
       "status": "success",
       "message": "Created backup before CMS save.",
       "commitSha": "ac66cce1834e56077c0bfa8f49b919ddd6681f4c",
+      "targetPath": "public/content/site-content.json",
+      "backupPath": "public/content/backups/site-content-2026-07-03T15-17-42-735Z.json"
+    },
+    {
+      "id": "audit_1783091865105_a4974425fb",
+      "action": "cms_save",
+      "timestamp": "2026-07-03T15:17:45.106Z",
+      "status": "success",
+      "message": "CMS content saved successfully.",
+      "commitSha": "35319d29633dc56b44f4ea5f0994bfef59c851c7",
       "targetPath": "public/content/site-content.json",
       "backupPath": "public/content/backups/site-content-2026-07-03T15-17-42-735Z.json"
     }
