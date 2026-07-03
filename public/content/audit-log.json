@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-03T11:50:09.128Z",
+  "updatedAt": "2026-07-03T11:53:31.418Z",
   "records": [
     {
       "id": "audit_1783079224952_5145411ae9",
@@ -71,6 +71,16 @@
       "commitSha": "a976fbd6cf19deb1b2268df13d550d52c0144388",
       "targetPath": "public/content/site-content.json",
       "backupPath": "public/content/backups/site-content-2026-07-03T11-50-06-609Z.json"
+    },
+    {
+      "id": "audit_1783079611418_4c6a5f364a",
+      "action": "backup_created",
+      "timestamp": "2026-07-03T11:53:31.418Z",
+      "status": "success",
+      "message": "Created backup before CMS save.",
+      "commitSha": "8c2eef7a5e39ab5028656012879906c36b6a490d",
+      "targetPath": "public/content/site-content.json",
+      "backupPath": "public/content/backups/site-content-2026-07-03T11-53-30-536Z.json"
     }
   ]
 }
