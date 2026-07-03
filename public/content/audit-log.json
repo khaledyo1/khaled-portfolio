@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-03T11:47:06.543Z",
+  "updatedAt": "2026-07-03T11:49:18.524Z",
   "records": [
     {
       "id": "audit_1783079224952_5145411ae9",
@@ -19,6 +19,16 @@
       "status": "success",
       "message": "CMS content saved successfully.",
       "commitSha": "a444880fee75bde493864a4caf882ef48a8db1ce",
+      "targetPath": "public/content/site-content.json",
+      "backupPath": "public/content/backups/site-content-2026-07-03T11-47-04-098Z.json"
+    },
+    {
+      "id": "audit_1783079358524_bf1e55f001",
+      "action": "rollback_started",
+      "timestamp": "2026-07-03T11:49:18.524Z",
+      "status": "success",
+      "message": "Rollback started by admin session.",
+      "commitSha": "",
       "targetPath": "public/content/site-content.json",
       "backupPath": "public/content/backups/site-content-2026-07-03T11-47-04-098Z.json"
     }
