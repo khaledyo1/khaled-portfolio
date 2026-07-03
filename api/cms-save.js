@@ -9,8 +9,13 @@ const {
 } = require("../lib/server-utils");
 const { ValidationError, cleanString, normalizeContent } = require("../lib/cms-schema");
 const { requireAdminSession } = require("../lib/admin-auth");
+const { createGitHubClient, safeGitHubErrorMessage } = require("../lib/github-content");
+const {
+  CONTENT_PATH,
+  appendAuditRecordSafe,
+  createContentBackup
+} = require("../lib/cms-backups");
 
-const CONTENT_PATH = "public/content/site-content.json";
 const LIMITS = Object.freeze({
   bodyBytes: 2_800_000,
   uploadCount: 6,
@@ -20,45 +25,15 @@ const LIMITS = Object.freeze({
 });
 const ALLOWED_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-function requiredEnv(name) {
-  const value = process.env[name];
-  if (!value) throw new Error(`missing_env:${name}`);
-  return value;
-}
-
-function githubHeaders(token) {
-  return {
-    Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-    "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "khaled-portfolio-cms"
-  };
-}
-
 function safeErrorMessage(error) {
   const raw = String(error?.message || "");
   if (raw.startsWith("missing_env:")) return "إعدادات النشر غير مكتملة داخل Vercel Environment Variables.";
   if (error instanceof ValidationError) return "البيانات غير صالحة. راجع الحقول المطلوبة والروابط.";
-  if (/bad credentials/i.test(raw)) return "GitHub Token غير صحيح أو لا يملك صلاحية الوصول.";
-  if (/not found/i.test(raw)) return "لم يتم العثور على الريبو أو الملف. راجع GITHUB_OWNER و GITHUB_REPO واسم الفرع.";
-  if (/rate limit/i.test(raw)) return "تم تجاوز حد GitHub API مؤقتاً. حاول لاحقاً.";
   if (/body_too_large/i.test(raw)) return "حجم البيانات كبير جداً. قلل حجم الصور أو عددها.";
   if (/invalid_json/i.test(raw)) return "صيغة الطلب غير صالحة.";
-  return "فشل الحفظ بسبب خطأ آمن غير متوقع.";
-}
-
-async function githubRequest(url, options = {}) {
-  const response = await fetch(url, options);
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = payload?.message || `GitHub request failed with ${response.status}`;
-    const error = new Error(message);
-    error.status = response.status;
-    error.githubPayload = payload;
-    throw error;
-  }
-  return payload;
+  if (/current_content_invalid/i.test(raw)) return "تعذر إنشاء نسخة احتياطية لأن المحتوى الحالي غير صالح.";
+  if (/invalid upload/i.test(raw) || /upload.*large/i.test(raw)) return "أحد ملفات الصور غير صالح أو حجمه أكبر من المسموح.";
+  return safeGitHubErrorMessage(error);
 }
 
 function safeRepoPath(value) {
@@ -91,25 +66,22 @@ function sanitizeUploads(uploads) {
   });
 }
 
-async function getFileSha({ owner, repo, branch, path, headers }) {
-  const safePath = encodeURIComponent(path).replace(/%2F/g, "/");
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${safePath}?ref=${encodeURIComponent(branch)}`;
-  try {
-    const payload = await githubRequest(url, { headers });
-    return payload.sha || null;
-  } catch (error) {
-    if (Number(error.status) === 404 || /not found/i.test(error.message)) return null;
-    throw error;
+async function writeUploads(github, uploads) {
+  for (const upload of uploads) {
+    await github.writeBase64File(
+      upload.path,
+      upload.contentBase64,
+      `CMS upload ${upload.path}`
+    );
   }
 }
 
-async function putFile({ owner, repo, branch, path, contentBase64, message, headers }) {
-  const sha = await getFileSha({ owner, repo, branch, path, headers });
-  const safePath = encodeURIComponent(path).replace(/%2F/g, "/");
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${safePath}`;
-  const body = { message, content: contentBase64, branch };
-  if (sha) body.sha = sha;
-  return githubRequest(url, { method: "PUT", headers, body: JSON.stringify(body) });
+async function publishContent(github, content) {
+  return github.writeFile(
+    CONTENT_PATH,
+    `${JSON.stringify(content, null, 2)}\n`,
+    "Update portfolio CMS content"
+  );
 }
 
 module.exports = async function handler(request, response) {
@@ -128,52 +100,67 @@ module.exports = async function handler(request, response) {
     return sendJson(response, 429, { ok: false, message: "طلبات كثيرة جداً. حاول بعد دقائق." }, origin);
   }
 
+  let github = null;
+  let backupPath = "";
+
   try {
     const session = requireAdminSession(request, { requireCsrf: true });
     if (!session.ok) {
       return sendJson(response, session.status, { ok: false, message: session.message }, origin);
     }
 
-    const token = requiredEnv("GITHUB_TOKEN");
-    const owner = requiredEnv("GITHUB_OWNER");
-    const repo = requiredEnv("GITHUB_REPO");
-    const branch = process.env.GITHUB_BRANCH || "main";
-
     const parsed = await parseJsonBody(request, LIMITS.bodyBytes);
     const content = normalizeContent(parsed.content);
     const uploads = sanitizeUploads(parsed.uploads);
-    const headers = githubHeaders(token);
+    github = createGitHubClient();
 
-    for (const upload of uploads) {
-      await putFile({
-        owner,
-        repo,
-        branch,
-        path: upload.path,
-        contentBase64: upload.contentBase64,
-        message: `CMS upload ${upload.path}`,
-        headers
-      });
-    }
+    const backup = await createContentBackup(github, {
+      operation: "cms_save",
+      metadata: { uploads: uploads.length, ip },
+      message: "CMS backup before content save"
+    });
+    backupPath = backup.backupPath;
 
-    const contentBase64 = Buffer.from(JSON.stringify(content, null, 2), "utf8").toString("base64");
-    await putFile({
-      owner,
-      repo,
-      branch,
-      path: CONTENT_PATH,
-      contentBase64,
-      message: "Update portfolio CMS content",
-      headers
+    await appendAuditRecordSafe(github, {
+      action: "backup_created",
+      status: "success",
+      message: "Created backup before CMS save.",
+      commitSha: backup.commitSha,
+      targetPath: CONTENT_PATH,
+      backupPath
+    });
+
+    await writeUploads(github, uploads);
+    const publish = await publishContent(github, content);
+
+    await appendAuditRecordSafe(github, {
+      action: "cms_save",
+      status: "success",
+      message: "CMS content saved successfully.",
+      commitSha: publish.commitSha,
+      targetPath: CONTENT_PATH,
+      backupPath
     });
 
     return sendJson(response, 200, {
       ok: true,
-      message: "تم الحفظ داخل GitHub. انتظر Vercel حتى ينشر التعديل.",
+      message: "تم الحفظ داخل GitHub بعد إنشاء نسخة احتياطية. انتظر Vercel حتى ينشر التعديل.",
       updatedAt: content.updatedAt,
-      uploadedFiles: uploads.length
+      uploadedFiles: uploads.length,
+      backupPath,
+      commitSha: publish.commitSha || ""
     }, origin);
   } catch (error) {
+    if (github) {
+      await appendAuditRecordSafe(github, {
+        action: "cms_save",
+        status: "failure",
+        message: safeErrorMessage(error),
+        targetPath: CONTENT_PATH,
+        backupPath
+      });
+    }
+
     const status = error instanceof ValidationError ? 422 : 500;
     return sendJson(response, status, {
       ok: false,

@@ -35,6 +35,7 @@
         <button class="admin-tab" data-tab="contacts" type="button">التواصل والسوشيال</button>
         <button class="admin-tab" data-tab="projects" type="button">المشاريع</button>
         <button class="admin-tab" data-tab="publish" type="button">الحفظ والنشر</button>
+        <button class="admin-tab" data-tab="backups" type="button">النسخ الاحتياطية والاسترجاع</button>
       </aside>
 
       <form id="adminForm" autocomplete="off">
@@ -114,6 +115,33 @@
           <p class="small">زر الحفظ والفحص لن يرسلا كلمة المرور. كلمة المرور تُستخدم فقط لإنشاء جلسة إدارة مؤقتة. إذا لم تضبط GitHub Token داخل Vercel، سيعمل التصدير والمعاينة فقط.</p>
           <div class="status" id="statusBox">جاهز للتعديل.</div>
         </section>
+
+        <section class="admin-panel" data-panel="backups">
+          <div class="panel-title">
+            <div>
+              <h2>Backups &amp; Rollback</h2>
+              <p>حمّل آخر النسخ الاحتياطية، عاين محتواها، أو استرجع نسخة سابقة عند حدوث خطأ في المحتوى.</p>
+            </div>
+          </div>
+          <div class="backup-toolbar">
+            <button class="btn primary" id="loadBackupsBtn" type="button">Load Backups</button>
+            <button class="btn ghost" id="clearBackupPreviewBtn" type="button">Clear Preview</button>
+          </div>
+          <p class="small">كل عملية حفظ تنشئ نسخة احتياطية تلقائياً قبل تحديث <code>site-content.json</code>. الاسترجاع ينشئ نسخة أمان إضافية قبل إعادة النسخة المحددة.</p>
+          <div class="backup-layout">
+            <div class="backup-list" id="backupList" aria-live="polite">
+              <p class="small">اضغط Load Backups بعد تسجيل الدخول لعرض آخر النسخ.</p>
+            </div>
+            <div class="backup-preview-card">
+              <div class="backup-preview-title">
+                <strong>Backup Preview</strong>
+                <span id="backupPreviewMeta">لا توجد نسخة محددة.</span>
+              </div>
+              <pre class="backup-preview" id="backupPreview">اختر نسخة ثم اضغط Preview Backup.</pre>
+            </div>
+          </div>
+        </section>
+
       </form>
     </section>
   </main>

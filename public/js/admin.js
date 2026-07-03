@@ -8,6 +8,9 @@
   const AUTH_LOGIN_URL = "/api/auth-login";
   const AUTH_SESSION_URL = "/api/auth-session";
   const AUTH_LOGOUT_URL = "/api/auth-logout";
+  const BACKUPS_URL = "/api/cms-backups";
+  const BACKUP_READ_URL = "/api/cms-backup-read";
+  const ROLLBACK_URL = "/api/cms-rollback";
   const MAX_UPLOAD_BYTES = 1_800_000;
 
   let content = null;
@@ -38,7 +41,12 @@
     loginBtn: $("#loginBtn"),
     logoutBtn: $("#logoutBtn"),
     adminPassword: $("#adminPassword"),
-    importFile: $("#importFile")
+    importFile: $("#importFile"),
+    backupList: $("#backupList"),
+    backupPreview: $("#backupPreview"),
+    backupPreviewMeta: $("#backupPreviewMeta"),
+    loadBackupsBtn: $("#loadBackupsBtn"),
+    clearBackupPreviewBtn: $("#clearBackupPreviewBtn")
   };
 
   function status(message, type = "") {
@@ -130,6 +138,46 @@
       "Content-Type": "application/json",
       "X-CSRF-Token": csrfToken
     };
+  }
+
+
+
+  function setButtonBusy(button, busy, busyText = "جاري التنفيذ...") {
+    if (!button) return;
+    if (busy) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = busyText;
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      return;
+    }
+    button.textContent = button.dataset.originalText || button.textContent;
+    button.disabled = false;
+    button.removeAttribute("aria-busy");
+  }
+
+  function handleAuthFailure(response) {
+    if (response.status === 401 || response.status === 403) {
+      csrfToken = "";
+      updateSessionState(false);
+    }
+  }
+
+  async function fetchJsonWithSession(url, options = {}) {
+    const sessionOk = await requireSession();
+    if (!sessionOk) throw new Error("سجّل الدخول أولاً.");
+
+    const response = await fetch(url, {
+      method: options.method || "GET",
+      headers: options.body ? authHeaders() : { "X-CSRF-Token": csrfToken },
+      credentials: "same-origin",
+      cache: "no-store",
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
+    const payload = await response.json().catch(() => ({}));
+    handleAuthFailure(response);
+    if (!response.ok || !payload.ok) throw new Error(payload.message || "فشل تنفيذ الطلب.");
+    return payload;
   }
 
   function escapeHtml(value) {
@@ -458,10 +506,97 @@
       if (!response.ok || !payload.ok) throw new Error(payload.message || "فشل الحفظ.");
       pendingUploads = [];
       localStorage.removeItem(PREVIEW_KEY);
-      status("تم الحفظ بنجاح. انتظر دقيقة تقريباً حتى يكتمل Vercel redeploy وتظهر التغييرات للجميع.", "success");
+      status(`تم الحفظ بنجاح مع إنشاء نسخة احتياطية. انتظر دقيقة تقريباً حتى يكتمل Vercel redeploy.\nBackup: ${payload.backupPath || "created"}`, "success");
     } catch (error) {
       status(error.message, "error");
     }
+  }
+
+
+
+  function formatBackupTimestamp(timestamp) {
+    if (!timestamp) return "تاريخ غير معروف";
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return timestamp;
+    return date.toLocaleString("ar", { dateStyle: "medium", timeStyle: "medium" });
+  }
+
+  function renderBackups(backups = []) {
+    if (!fields.backupList) return;
+    if (!backups.length) {
+      fields.backupList.innerHTML = '<p class="small">لا توجد نسخ احتياطية بعد. أول عملية حفظ جديدة ستنشئ نسخة تلقائياً.</p>';
+      return;
+    }
+
+    fields.backupList.innerHTML = backups.map(backup => `
+      <article class="backup-item">
+        <div>
+          <strong>${escapeHtml(formatBackupTimestamp(backup.timestamp))}</strong>
+          <code>${escapeHtml(backup.path)}</code>
+          <small>Size: ${Number(backup.size || 0).toLocaleString()} bytes</small>
+        </div>
+        <div class="backup-actions">
+          <button class="btn ghost" type="button" data-backup-preview="${escapeHtml(backup.path)}">Preview Backup</button>
+          <button class="btn danger" type="button" data-backup-restore="${escapeHtml(backup.path)}">Restore This Backup</button>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  async function loadBackups() {
+    setButtonBusy(fields.loadBackupsBtn, true, "Loading...");
+    status("جاري تحميل النسخ الاحتياطية...", "");
+    try {
+      const payload = await fetchJsonWithSession(BACKUPS_URL);
+      renderBackups(payload.backups || []);
+      status(`تم تحميل ${payload.count || 0} نسخة احتياطية.`, "success");
+    } catch (error) {
+      status(error.message || "فشل تحميل النسخ الاحتياطية.", "error");
+    } finally {
+      setButtonBusy(fields.loadBackupsBtn, false);
+    }
+  }
+
+  async function previewBackup(path) {
+    status("جاري قراءة النسخة الاحتياطية...", "");
+    try {
+      const url = `${BACKUP_READ_URL}?path=${encodeURIComponent(path)}`;
+      const payload = await fetchJsonWithSession(url);
+      fields.backupPreviewMeta.textContent = `${formatBackupTimestamp(payload.backup?.timestamp)} — ${payload.backup?.path || path}`;
+      fields.backupPreview.textContent = JSON.stringify(payload.content, null, 2);
+      status("تم تحميل معاينة النسخة الاحتياطية.", "success");
+    } catch (error) {
+      status(error.message || "فشل عرض النسخة الاحتياطية.", "error");
+    }
+  }
+
+  async function restoreBackup(path, button) {
+    const confirmed = window.confirm(`سيتم استرجاع هذه النسخة ونشرها مكان المحتوى الحالي:\n\n${path}\n\nسيتم إنشاء نسخة أمان من المحتوى الحالي قبل الاسترجاع. هل تريد المتابعة؟`);
+    if (!confirmed) return;
+
+    setButtonBusy(button, true, "Restoring...");
+    status("جاري استرجاع النسخة الاحتياطية...", "");
+    try {
+      const payload = await fetchJsonWithSession(ROLLBACK_URL, {
+        method: "POST",
+        body: { path }
+      });
+      localStorage.removeItem(PREVIEW_KEY);
+      await loadInitialContent();
+      fillForm();
+      await loadBackups();
+      status(`${payload.message}\nSafety backup: ${payload.safetyBackupPath || "created"}`, "success");
+    } catch (error) {
+      status(error.message || "فشل استرجاع النسخة الاحتياطية.", "error");
+    } finally {
+      setButtonBusy(button, false);
+    }
+  }
+
+  function clearBackupPreview() {
+    if (fields.backupPreviewMeta) fields.backupPreviewMeta.textContent = "لا توجد نسخة محددة.";
+    if (fields.backupPreview) fields.backupPreview.textContent = "اختر نسخة ثم اضغط Preview Backup.";
+    status("تم حذف معاينة النسخة الاحتياطية من الشاشة فقط.", "success");
   }
 
   function exportJson() {
@@ -509,6 +644,8 @@
     fields.logoutBtn.addEventListener("click", logoutAdmin);
     $("#diagnosticsBtn").addEventListener("click", runDiagnostics);
     $("#saveBtn").addEventListener("click", saveAndPublish);
+    fields.loadBackupsBtn?.addEventListener("click", loadBackups);
+    fields.clearBackupPreviewBtn?.addEventListener("click", clearBackupPreview);
     $("#exportBtn").addEventListener("click", exportJson);
     fields.importFile.addEventListener("change", event => importJson(event.target.files?.[0]));
     fields.heroImageUpload.addEventListener("change", handleHeroUpload);
@@ -521,6 +658,16 @@
       const removeSocial = event.target.closest("[data-remove-social]");
       if (removeSocial) {
         removeSocial.closest("[data-social-index]")?.remove();
+      }
+
+      const preview = event.target.closest("[data-backup-preview]");
+      if (preview) {
+        previewBackup(preview.dataset.backupPreview || "");
+      }
+
+      const restore = event.target.closest("[data-backup-restore]");
+      if (restore) {
+        restoreBackup(restore.dataset.backupRestore || "", restore);
       }
     });
 
